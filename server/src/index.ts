@@ -23,7 +23,7 @@ async function bootstrap() {
 
     // 3. Start Express HTTP Server
     const app = createApp();
-    const server = app.listen(config.port, () => {
+    const server = app.listen(config.port, '0.0.0.0', () => {
       console.log(`[Lotus Impex Backend] REST API listening on port ${config.port}`);
       console.log(`[Lotus Impex Backend] Health check: http://localhost:${config.port}/api/v1/health`);
       console.log(`[Lotus Impex Backend] Allowed Client URL: ${config.clientUrl}`);

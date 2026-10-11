@@ -3,18 +3,31 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # Build outputs
 dist/
 build/
 .output/
 
+# Database & Runtime Data
+data/
+server/data/
+*.sock
+WiredTiger*
+
+# Scratch & Cache
+scratch/
+.cache/
+coverage/
+
 # Environment files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+server/.env
+server/.env.*
+client/.env
+client/.env.*
 
 # Editor & OS files
 .DS_Store
@@ -26,3 +39,4 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
