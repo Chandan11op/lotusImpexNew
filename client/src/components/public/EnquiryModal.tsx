@@ -5,6 +5,7 @@ import { Select } from '../ui/Select';
 import { Textarea } from '../ui/Textarea';
 import { Button } from '../ui/Button';
 import { api } from '../../services/api';
+import { useLocale } from '../../context/LocaleContext';
 import { CheckCircle2, Send, ShieldCheck } from 'lucide-react';
 
 interface EnquiryModalProps {
@@ -14,6 +15,7 @@ interface EnquiryModalProps {
 }
 
 export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, product }) => {
+  const { t } = useLocale();
   const [formData, setFormData] = useState({
     customerName: '',
     company: '',
@@ -75,11 +77,11 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
     <Modal
       isOpen={isOpen}
       onClose={handleReset}
-      title={successData ? 'Quotation Request Received' : 'Request a Quotation & Specification'}
+      title={successData ? t('msgSuccessTitle') : t('rfqTitle')}
       description={
         successData
-          ? 'Your RFQ has been logged and assigned to our sales engineering team.'
-          : 'Share your requirements for precision sanitary fittings, tubes, valves, and fluid handling components.'
+          ? t('msgSuccessDesc')
+          : t('rfqSubtitle')
       }
       maxWidth="lg"
     >
@@ -88,16 +90,15 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-4">
             <CheckCircle2 className="h-8 w-8" />
           </div>
-          <h4 className="text-xl font-bold text-steel-900 mb-2">Thank You, {successData.customerName}!</h4>
-          <p className="text-sm text-steel-600 max-w-md mx-auto mb-6">
+          <h4 className="text-xl font-bold text-steel-900 dark:text-white mb-2">Thank You, {successData.customerName}!</h4>
+          <p className="text-sm text-steel-600 dark:text-steel-300 max-w-md mx-auto mb-6">
             Your enquiry has been successfully logged with reference number:
           </p>
-          <div className="inline-block bg-steel-100 border border-steel-300 rounded-lg px-4 py-2 text-steel-900 font-mono font-bold text-base mb-6">
+          <div className="inline-block bg-steel-100 dark:bg-steel-800 border border-steel-300 dark:border-steel-700 rounded-lg px-4 py-2 text-steel-900 dark:text-cyan-400 font-mono font-bold text-base mb-6">
             {successData.enquiryNumber}
           </div>
-          <p className="text-xs text-steel-500 max-w-sm mx-auto mb-6">
-            A confirmation has been recorded in our unified CRM. Our Mumbai sales desk will review
-            your specifications and provide a tailored proposal shortly.
+          <p className="text-xs text-steel-500 dark:text-steel-400 max-w-sm mx-auto mb-6">
+            {t('msgSuccessDesc')}
           </p>
           <Button variant="primary" onClick={handleReset} className="w-full">
             Done
@@ -106,30 +107,30 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">
+            <div className="p-3 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg text-xs text-red-700 dark:text-red-300">
               {error}
             </div>
           )}
 
           {formData.productName && (
-            <div className="p-3 bg-blue-50/70 border border-blue-200/80 rounded-lg">
-              <span className="text-[11px] font-semibold text-brand-blue uppercase tracking-wider block">
-                Selected Product:
+            <div className="p-3 bg-blue-50/70 dark:bg-steel-800 border border-blue-200/80 dark:border-steel-700 rounded-lg">
+              <span className="text-[11px] font-semibold text-brand-blue dark:text-cyan-400 uppercase tracking-wider block">
+                {t('lblProduct')}:
               </span>
-              <p className="text-sm font-semibold text-steel-900 mt-0.5">{formData.productName}</p>
+              <p className="text-sm font-semibold text-steel-900 dark:text-white mt-0.5">{formData.productName}</p>
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Full Name"
+              label={t('lblCustomerName')}
               required
               placeholder="e.g. Rajesh Mehta"
               value={formData.customerName}
               onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
             />
             <Input
-              label="Company Name"
+              label={t('lblCompany')}
               required
               placeholder="e.g. Amul Dairy Cooperative"
               value={formData.company}
@@ -139,7 +140,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Business Email"
+              label={t('lblEmail')}
               type="email"
               required
               placeholder="name@company.com"
@@ -147,7 +148,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
             <Input
-              label="Contact Phone / WhatsApp"
+              label={t('lblPhone')}
               required
               placeholder="+91 98200 00000"
               value={formData.phone}
@@ -157,13 +158,13 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Input
-              label="Destination Country"
+              label={t('lblCountry')}
               required
               value={formData.country}
               onChange={(e) => setFormData({ ...formData, country: e.target.value })}
             />
             <Input
-              label="Quantity"
+              label={t('lblQuantity')}
               type="number"
               min="1"
               required
@@ -171,7 +172,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
               onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value, 10) || 1 })}
             />
             <Select
-              label="Unit"
+              label={t('lblUnit')}
               value={formData.unit}
               onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
               options={[
@@ -184,7 +185,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
           </div>
 
           <Textarea
-            label="Specifications & Requirements"
+            label={t('lblMessage')}
             required
             rows={3}
             placeholder="Specify size (e.g. 1.5 inch OD), grade (SS316L / SS304), standard (ASTM A270, SMS, DIN), surface roughness, or target delivery date..."
@@ -194,7 +195,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
             <Select
-              label="Preferred Contact Method"
+              label={t('lblPreferredContact')}
               value={formData.preferredContactMethod}
               onChange={(e) => setFormData({ ...formData, preferredContactMethod: e.target.value })}
               options={[
@@ -203,18 +204,18 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, pro
                 { label: 'WhatsApp', value: 'WhatsApp' },
               ]}
             />
-            <div className="flex items-center gap-2 pt-5 text-xs text-steel-500">
+            <div className="flex items-center gap-2 pt-5 text-xs text-steel-500 dark:text-steel-400">
               <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
               <span>Direct RFQ logged into CRM. Your contact info is kept strictly confidential.</span>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-steel-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-steel-100 dark:border-steel-800">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button type="submit" variant="primary" isLoading={loading} icon={<Send className="h-4 w-4" />}>
-              Submit Quotation Request
+              {loading ? t('msgSubmitting') : t('btnSubmitRfq')}
             </Button>
           </div>
         </form>

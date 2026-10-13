@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 import {
   LayoutDashboard,
   Inbox,
@@ -112,17 +113,17 @@ export const CrmLayout: React.FC = () => {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-steel-100 dark:bg-steel-950 transition-colors">
         {/* Top Navigation Header */}
-        <header className="h-16 bg-white border-b border-steel-200 px-4 sm:px-6 lg:px-8 flex items-center justify-between shrink-0 shadow-xs">
+        <header className="h-16 bg-white dark:bg-steel-900 border-b border-steel-200 dark:border-steel-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between shrink-0 shadow-xs transition-colors">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 text-steel-600 hover:bg-steel-100 rounded-lg"
+              className="lg:hidden p-2 text-steel-600 dark:text-steel-300 hover:bg-steel-100 dark:hover:bg-steel-800 rounded-lg"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <h1 className="text-base font-bold text-steel-800 capitalize truncate">
+            <h1 className="text-base font-bold text-steel-800 dark:text-white capitalize truncate">
               {location.pathname === '/crm'
                 ? 'Overview & Key Performance Indicators'
                 : location.pathname.split('/')[2]?.replace('-', ' ')}
@@ -130,23 +131,25 @@ export const CrmLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
+
             <Link
               to="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-steel-600 hover:text-brand-blue transition-colors px-2.5 py-1.5 rounded-lg border border-steel-200 hover:border-steel-300"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-steel-600 dark:text-steel-300 hover:text-brand-blue dark:hover:text-cyan-400 transition-colors px-2.5 py-1.5 rounded-lg border border-steel-200 dark:border-steel-700 hover:border-steel-300"
             >
               <span>Public Website</span>
               <ExternalLink className="h-3 w-3" />
             </Link>
 
-            <div className="h-8 w-px bg-steel-200 hidden sm:block" />
+            <div className="h-8 w-px bg-steel-200 dark:bg-steel-800 hidden sm:block" />
 
             <div className="hidden sm:flex items-center gap-2 text-xs">
-              <div className="h-7 w-7 rounded-full bg-steel-800 text-white flex items-center justify-center font-bold text-xs uppercase">
+              <div className="h-7 w-7 rounded-full bg-steel-800 dark:bg-steel-700 text-white flex items-center justify-center font-bold text-xs uppercase">
                 {user.name.charAt(0)}
               </div>
-              <span className="font-semibold text-steel-800">{user.name}</span>
+              <span className="font-semibold text-steel-800 dark:text-steel-200">{user.name}</span>
             </div>
           </div>
         </header>

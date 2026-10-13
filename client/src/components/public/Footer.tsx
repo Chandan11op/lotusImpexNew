@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, ShieldCheck, ArrowRight, Lock } from 'lucide-react';
+import { LanguageSelector } from '../ui/LanguageSelector';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export const Footer: React.FC = () => {
   return (
@@ -159,7 +161,8 @@ export const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-steel-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-steel-500">
           <p>© {new Date().getFullYear()} Lotus Impex. All rights reserved. Mumbai, India.</p>
           <div className="flex items-center gap-4">
-            <span>Precision Engineered Stainless Solutions</span>
+            <LanguageSelector variant="full" />
+            <ThemeToggle />
             <span>•</span>
             <Link to="/contact" className="hover:text-steel-300">
               Contact Mumbai Sales Desk

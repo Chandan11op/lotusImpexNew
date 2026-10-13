@@ -7,8 +7,29 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-steel-50 text-steel-900;
+    @apply bg-steel-50 text-steel-900 transition-colors duration-200;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  .dark body,
+  body.dark {
+    @apply bg-steel-950 text-steel-100;
+  }
+
+  /* Support for Right-To-Left (Arabic) */
+  [dir="rtl"] {
+    text-align: right;
+  }
+
+  /* Accessible Reduced Motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

@@ -25,41 +25,48 @@ import { ReportsPage } from './pages/crm/ReportsPage';
 import { UsersPage } from './pages/crm/UsersPage';
 import { SettingsPage } from './pages/crm/SettingsPage';
 
+import { ThemeProvider } from './context/ThemeContext';
+import { LocaleProvider } from './context/LocaleContext';
+
 export function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Public Website Routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/products" element={<CataloguePage />} />
-            <Route path="/products/:slug" element={<ProductDetailPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/industries" element={<IndustriesPage />} />
-            <Route path="/quality" element={<QualityPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
+    <ThemeProvider>
+      <LocaleProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              {/* Public Website Routes */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/products" element={<CataloguePage />} />
+                <Route path="/products/:slug" element={<ProductDetailPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/industries" element={<IndustriesPage />} />
+                <Route path="/quality" element={<QualityPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Route>
 
-          {/* CRM Authentication */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin" element={<Navigate to="/crm" replace />} />
+              {/* CRM Authentication */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/admin" element={<Navigate to="/crm" replace />} />
 
-          {/* Protected CRM Dashboard Routes */}
-          <Route path="/crm" element={<CrmLayout />}>
-            <Route index element={<CrmOverviewPage />} />
-            <Route path="enquiries" element={<EnquiriesPage />} />
-            <Route path="customers" element={<CustomersPage />} />
-            <Route path="products" element={<ProductsPage />} />
-            <Route path="follow-ups" element={<FollowUpsPage />} />
-            <Route path="reports" element={<ReportsPage />} />
-            <Route path="users" element={<UsersPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+              {/* Protected CRM Dashboard Routes */}
+              <Route path="/crm" element={<CrmLayout />}>
+                <Route index element={<CrmOverviewPage />} />
+                <Route path="enquiries" element={<EnquiriesPage />} />
+                <Route path="customers" element={<CustomersPage />} />
+                <Route path="products" element={<ProductsPage />} />
+                <Route path="follow-ups" element={<FollowUpsPage />} />
+                <Route path="reports" element={<ReportsPage />} />
+                <Route path="users" element={<UsersPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </LocaleProvider>
+    </ThemeProvider>
   );
 }
 
