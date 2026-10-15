@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   getPublicProducts,
+  getPriorityProducts,
   getPublicProductBySlug,
   getCategories,
   getAdminProducts,
@@ -14,6 +15,7 @@ const router = Router();
 
 // Public endpoints
 router.get('/public', getPublicProducts);
+router.get('/public/priority', getPriorityProducts);
 router.get('/public/categories', getCategories);
 router.get('/public/:slug', getPublicProductBySlug);
 
@@ -21,6 +23,7 @@ router.get('/public/:slug', getPublicProductBySlug);
 router.get('/admin', requireAuth, getAdminProducts);
 router.post('/admin', requireAuth, createProduct);
 router.put('/admin/:id', requireAuth, updateProduct);
+router.patch('/admin/:id', requireAuth, updateProduct);
 router.delete('/admin/:id', requireAuth, requireRole('super_admin'), deleteProduct);
 
 export default router;

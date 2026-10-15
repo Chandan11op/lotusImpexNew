@@ -5,9 +5,12 @@ export type EnquiryStatus =
   | 'contacted'
   | 'qualified'
   | 'quotation_sent'
+  | 'follow_up'
   | 'negotiation'
+  | 'order_confirmed'
   | 'won'
-  | 'lost';
+  | 'lost'
+  | 'on_hold';
 
 export type EnquiryPriority = 'low' | 'medium' | 'high' | 'urgent';
 
@@ -24,11 +27,16 @@ export interface IEnquiry extends Document {
   company: string;
   email: string;
   phone: string;
+  whatsappNumber?: string;
   country: string;
   productRef?: mongoose.Types.ObjectId;
   productName?: string;
+  materialGrade?: string;
+  sizeRequirement?: string;
   quantity?: number;
   unit?: string;
+  deliveryDestination?: string;
+  requiredDate?: Date;
   message: string;
   source: string;
   status: EnquiryStatus;
@@ -40,6 +48,7 @@ export interface IEnquiry extends Document {
   lossReason?: string;
   notes?: string;
   preferredContactMethod?: string;
+  attachments?: mongoose.Types.ObjectId[];
   activityHistory: IEnquiryActivity[];
   isDemoRecord: boolean;
   createdAt: Date;
@@ -63,16 +72,21 @@ const EnquirySchema = new Schema<IEnquiry>(
     company: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, required: true, trim: true },
+    whatsappNumber: { type: String, trim: true },
     country: { type: String, required: true, default: 'India' },
     productRef: { type: Schema.Types.ObjectId, ref: 'Product' },
     productName: { type: String, trim: true },
+    materialGrade: { type: String, trim: true },
+    sizeRequirement: { type: String, trim: true },
     quantity: { type: Number, default: 1 },
     unit: { type: String, default: 'Pieces' },
+    deliveryDestination: { type: String, trim: true },
+    requiredDate: { type: Date },
     message: { type: String, required: true },
     source: { type: String, default: 'website_rfq' },
     status: {
       type: String,
-      enum: ['new', 'contacted', 'qualified', 'quotation_sent', 'negotiation', 'won', 'lost'],
+      enum: ['new', 'contacted', 'qualified', 'quotation_sent', 'follow_up', 'negotiation', 'order_confirmed', 'won', 'lost', 'on_hold'],
       default: 'new',
       index: true,
     },
@@ -89,6 +103,7 @@ const EnquirySchema = new Schema<IEnquiry>(
     lossReason: { type: String },
     notes: { type: String },
     preferredContactMethod: { type: String, default: 'Email' },
+    attachments: [{ type: Schema.Types.ObjectId, ref: 'Upload' }],
     activityHistory: { type: [EnquiryActivitySchema], default: [] },
     isDemoRecord: { type: Boolean, default: true },
   },

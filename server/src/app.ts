@@ -40,7 +40,8 @@ export function createApp() {
     });
   }
 
-  // Mount API routes
+  // Mount API routes (supports both /api and /api/v1)
+  app.use('/api', apiRouter);
   app.use('/api/v1', apiRouter);
 
   // Centralized Error Handling

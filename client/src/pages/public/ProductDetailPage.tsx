@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 
 export const ProductDetailPage: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, productSlug } = useParams<{ slug?: string; productSlug?: string }>();
+  const effectiveSlug = productSlug || slug;
   const { openQuoteModal } = usePublicContext();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -31,10 +32,10 @@ export const ProductDetailPage: React.FC = () => {
 
   useEffect(() => {
     async function loadProduct() {
-      if (!slug) return;
+      if (!effectiveSlug) return;
       setLoading(true);
       try {
-        const res = await api.getProductBySlug(slug);
+        const res = await api.getProductBySlug(effectiveSlug);
         if (res?.success && res.data?.product) {
           setProduct(res.data.product);
           setRelated(res.data.related || []);
@@ -47,7 +48,7 @@ export const ProductDetailPage: React.FC = () => {
       }
     }
     loadProduct();
-  }, [slug]);
+  }, [effectiveSlug]);
 
   if (loading) {
     return (

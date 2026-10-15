@@ -21,7 +21,6 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   });
 
   if (response.status === 401 && !endpoint.includes('/auth/login')) {
-    // Notify auth context or clear local token if expired
     localStorage.removeItem('lotus_token');
   }
 
@@ -57,6 +56,7 @@ export const api = {
     search?: string;
     grade?: string;
     material?: string;
+    finish?: string;
     industry?: string;
     page?: number;
     limit?: number;
@@ -71,14 +71,20 @@ export const api = {
     }
     return request<any>(`/products/public?${query.toString()}`);
   },
+  getPriorityProducts: () => request<any>('/products/public/priority'),
   getProductBySlug: (slug: string) => request<any>(`/products/public/${slug}`),
   getCategories: () => request<any>('/products/public/categories'),
 
-  // Public RFQ / Enquiry
+  // Public RFQ / Enquiry & BOQ
   submitEnquiry: (enquiryData: any) =>
     request<any>('/enquiries/public', {
       method: 'POST',
       body: JSON.stringify(enquiryData),
+    }),
+  uploadBoqFile: (data: { originalName: string; mimeType: string; base64Data: string; category?: string; enquiryRef?: string }) =>
+    request<any>('/uploads/boq', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 
   // CRM Products
@@ -98,7 +104,7 @@ export const api = {
     }),
   updateProduct: (id: string, data: any) =>
     request<any>(`/products/admin/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(data),
     }),
   deleteProduct: (id: string) =>
@@ -135,8 +141,51 @@ export const api = {
       body: JSON.stringify({ note }),
     }),
 
+  // CRM Quotation Management
+  getQuotations: (params?: { status?: string; search?: string; page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '' && val !== 'all') query.set(key, String(val));
+      });
+    }
+    return request<any>(`/quotations?${query.toString()}`);
+  },
+  getQuotationById: (id: string) => request<any>(`/quotations/${id}`),
+  createQuotation: (data: any) =>
+    request<any>('/quotations', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateQuotationStatus: (id: string, data: { status: string; notes?: string }) =>
+    request<any>(`/quotations/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  // CRM Tasks & Follow-ups
+  getTasks: (params?: { status?: string; priority?: string; assignedUser?: string; page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '' && val !== 'all') query.set(key, String(val));
+      });
+    }
+    return request<any>(`/tasks?${query.toString()}`);
+  },
+  createTask: (data: any) =>
+    request<any>('/tasks', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateTask: (id: string, data: any) =>
+    request<any>(`/tasks/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
   // CRM Customers
-  getCustomers: (params?: { search?: string; country?: string; page?: number }) => {
+  getCustomers: (params?: { search?: string; country?: string; page?: number; limit?: number }) => {
     const query = new URLSearchParams();
     if (params) {
       Object.entries(params).forEach(([key, val]) => {
@@ -152,7 +201,7 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
-  // CRM Follow-ups
+  // CRM Follow-ups (Legacy mapping)
   getFollowUps: (params?: { filter?: string; page?: number }) => {
     const query = new URLSearchParams();
     if (params) {
@@ -219,11 +268,24 @@ export const api = {
       body: JSON.stringify({ newPassword }),
     }),
 
-  // Company Settings
+  // Company Settings & Public Brand
   getCompanySettings: () => request<any>('/settings'),
+  getPublicCompanySettings: () => request<any>('/settings/public'),
   updateCompanySettings: (data: any) =>
     request<any>('/settings', {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  // WhatsApp Integration & Audit Logs
+  getWhatsAppStatus: () => request<any>('/integrations/whatsapp/status'),
+  getAuditLogs: (params?: { action?: string; entityType?: string; page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '' && val !== 'all') query.set(key, String(val));
+      });
+    }
+    return request<any>(`/audit-logs?${query.toString()}`);
+  },
 };

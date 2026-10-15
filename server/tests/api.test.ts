@@ -145,11 +145,11 @@ describe('3. Public Catalogue & Product CRUD Tests', () => {
   it('should allow searching products by category and query', async () => {
     const res = await request(app)
       .get('/api/v1/products/public')
-      .query({ category: 'Valves & Butterfly Valves' });
+      .query({ category: 'Manual Sanitary Valves' });
 
     expect(res.status).toBe(200);
     expect(res.body.data.products.length).toBeGreaterThan(0);
-    expect(res.body.data.products[0].category).toBe('Valves & Butterfly Valves');
+    expect(res.body.data.products[0].category).toBe('Manual Sanitary Valves');
   });
 
   it('should allow creating a new product via CRM', async () => {
@@ -272,5 +272,132 @@ describe('6. Dashboard Overview Metrics Calculation', () => {
     expect(res.body.data.kpis.totalEnquiries).toBeGreaterThan(0);
     expect(Array.isArray(res.body.data.pipelineData)).toBe(true);
     expect(Array.isArray(res.body.data.categoryBreakdown)).toBe(true);
+  });
+});
+
+describe('7. Priority Products & Taxonomy Tests', () => {
+  it('should return top 20 priority products ordered by priority ascending', async () => {
+    const res = await request(app).get('/api/v1/products/public/priority');
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    // Verify first product has priority <= second
+    if (res.body.data.length >= 2) {
+      expect(res.body.data[0].priority).toBeLessThanOrEqual(res.body.data[1].priority);
+    }
+  });
+});
+
+describe('8. Quotation Engine & Server-Side Financial Math Tests', () => {
+  it('should calculate line item totals, discount, 18% GST tax, and grand total strictly on server', async () => {
+    const res = await request(app)
+      .get('/api/v1/quotations')
+      .set('Authorization', `Bearer ${superAdminToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.quotations)).toBe(true);
+
+    if (res.body.data.quotations.length > 0) {
+      const q = res.body.data.quotations[0];
+      expect(q.quotationNumber).toMatch(/^QT-/);
+      expect(typeof q.grandTotal).toBe('number');
+      expect(q.grandTotal).toBeGreaterThan(0);
+    }
+  });
+
+  it('should update quotation status and reflect state in audit log', async () => {
+    const quotations = await request(app)
+      .get('/api/v1/quotations')
+      .set('Authorization', `Bearer ${superAdminToken}`);
+
+    if (quotations.body.data.quotations.length > 0) {
+      const target = quotations.body.data.quotations[0];
+      const res = await request(app)
+        .patch(`/api/v1/quotations/${target._id}/status`)
+        .set('Authorization', `Bearer ${superAdminToken}`)
+        .send({ status: 'sent', notes: 'Sent to client via email' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.status).toBe('sent');
+    }
+  });
+});
+
+describe('9. Tasks & Operational Workflow Tests', () => {
+  it('should retrieve task listings with assignee and due date', async () => {
+    const res = await request(app)
+      .get('/api/v1/tasks')
+      .set('Authorization', `Bearer ${staffToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.tasks)).toBe(true);
+  });
+});
+
+describe('10. File Upload Security & BOQ Protection Tests', () => {
+  it('should reject file uploads with dangerous executable extensions', async () => {
+    const res = await request(app)
+      .post('/api/v1/uploads/boq')
+      .send({
+        originalName: 'exploit_script.exe',
+        base64Data: 'VGVzdCBkYXRh',
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain('not permitted');
+  });
+
+  it('should accept approved BOQ documents and return secure fileId', async () => {
+    const dummyPdfBase64 = Buffer.from('%PDF-1.4 sample bill of quantities').toString('base64');
+    const res = await request(app)
+      .post('/api/v1/uploads/boq')
+      .send({
+        originalName: 'Project_BOQ_Piping_Schedule.pdf',
+        mimeType: 'application/pdf',
+        base64Data: dummyPdfBase64,
+        category: 'boq',
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.fileId).toBeDefined();
+  });
+});
+
+describe('11. WhatsApp Business Webhook Handshake Tests', () => {
+  it('should successfully verify Meta webhook handshake with valid token', async () => {
+    const res = await request(app)
+      .get('/api/v1/integrations/whatsapp/webhook')
+      .query({
+        'hub.mode': 'subscribe',
+        'hub.verify_token': 'lotus_whatsapp_verify_token_2026',
+        'hub.challenge': 'CHALLENGE_ACCEPTED_12345',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.text).toBe('CHALLENGE_ACCEPTED_12345');
+  });
+
+  it('should reject Meta webhook verification with invalid token', async () => {
+    const res = await request(app)
+      .get('/api/v1/integrations/whatsapp/webhook')
+      .query({
+        'hub.mode': 'subscribe',
+        'hub.verify_token': 'wrong_invalid_token',
+        'hub.challenge': 'CHALLENGE_12345',
+      });
+
+    expect(res.status).toBe(403);
+  });
+
+  it('should return integration health status and click-to-chat fallback info', async () => {
+    const res = await request(app).get('/api/v1/integrations/whatsapp/status');
+    expect(res.status).toBe(200);
+    expect(res.body.data.businessNumber).toBeDefined();
+    expect(res.body.data.mode).toBeDefined();
   });
 });

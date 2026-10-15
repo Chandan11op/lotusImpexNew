@@ -18,6 +18,7 @@ import {
   X,
   Shield,
   Bell,
+  FileText,
 } from 'lucide-react';
 
 export const CrmLayout: React.FC = () => {
@@ -40,9 +41,11 @@ export const CrmLayout: React.FC = () => {
   const navItems = [
     { label: 'Overview', path: '/crm', icon: <LayoutDashboard className="h-4 w-4" /> },
     { label: 'Enquiries Pipeline', path: '/crm/enquiries', icon: <Inbox className="h-4 w-4" /> },
+    { label: 'Quotations & Offers', path: '/crm/quotations', icon: <FileText className="h-4 w-4" /> },
+    { label: 'Operational Tasks', path: '/crm/tasks', icon: <CalendarCheck className="h-4 w-4" /> },
     { label: 'Customer Directory', path: '/crm/customers', icon: <Users className="h-4 w-4" /> },
     { label: 'Product Management', path: '/crm/products', icon: <Package className="h-4 w-4" /> },
-    { label: 'Follow-ups & Tasks', path: '/crm/follow-ups', icon: <CalendarCheck className="h-4 w-4" /> },
+    { label: 'Follow-ups Log', path: '/crm/follow-ups', icon: <CalendarCheck className="h-4 w-4" /> },
     { label: 'Reports & Export', path: '/crm/reports', icon: <BarChart3 className="h-4 w-4" /> },
     ...(isSuperAdmin
       ? [

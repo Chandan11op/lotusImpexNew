@@ -7,6 +7,9 @@ import { Product } from '../models/Product.js';
 import { Customer } from '../models/Customer.js';
 import { Enquiry } from '../models/Enquiry.js';
 import { FollowUp } from '../models/FollowUp.js';
+import { Quotation } from '../models/Quotation.js';
+import { Task } from '../models/Task.js';
+import { AuditLog } from '../models/AuditLog.js';
 import { CommunicationLog } from '../models/CommunicationLog.js';
 import { CompanySettings } from '../models/CompanySettings.js';
 import { demoProducts, demoCustomers } from './seedData.js';
@@ -41,7 +44,7 @@ export async function seedDatabase(options: { silent?: boolean } = {}) {
     log(`Updated existing Super Admin credentials: ${adminUser.email}`);
   }
 
-  // 2. Seed Staff User
+  // 2. Seed Role Accounts (Sales, Accounts, Inventory)
   const staffEmail = 'staff@lotusimpex.com';
   let staffUser = await User.findOne({ email: staffEmail });
   if (!staffUser) {
@@ -50,11 +53,41 @@ export async function seedDatabase(options: { silent?: boolean } = {}) {
       name: 'Pooja Sharma (Sales Engineer)',
       email: staffEmail,
       passwordHash: staffHash,
-      role: 'staff',
+      role: 'sales',
       isActive: true,
       phone: '+91 98200 22000',
     });
-    log(`Created Demo Staff account: ${staffUser.email}`);
+    log(`Created Demo Sales account: ${staffUser.email}`);
+  }
+
+  const accountsEmail = 'accounts@lotusimpex.com';
+  let accountsUser = await User.findOne({ email: accountsEmail });
+  if (!accountsUser) {
+    const accHash = await bcrypt.hash('AccountsUser2026', 10);
+    accountsUser = await User.create({
+      name: 'Ramesh Gupta (Accounts Manager)',
+      email: accountsEmail,
+      passwordHash: accHash,
+      role: 'accounts',
+      isActive: true,
+      phone: '+91 98200 33000',
+    });
+    log(`Created Demo Accounts account: ${accountsUser.email}`);
+  }
+
+  const inventoryEmail = 'inventory@lotusimpex.com';
+  let inventoryUser = await User.findOne({ email: inventoryEmail });
+  if (!inventoryUser) {
+    const invHash = await bcrypt.hash('InventoryUser2026', 10);
+    inventoryUser = await User.create({
+      name: 'Sunil Verma (Inventory Supervisor)',
+      email: inventoryEmail,
+      passwordHash: invHash,
+      role: 'inventory',
+      isActive: true,
+      phone: '+91 98200 44000',
+    });
+    log(`Created Demo Inventory account: ${inventoryUser.email}`);
   }
 
   // 3. Seed Company Settings
@@ -232,8 +265,8 @@ export async function seedDatabase(options: { silent?: boolean } = {}) {
 
   const createdEnquiries: any[] = [];
   for (const enqData of sampleEnquiries) {
-    const cust = createdCustomers[enqData.customerIndex];
-    const prod = createdProducts[enqData.productIndex];
+    const cust = createdCustomers[enqData.customerIndex % createdCustomers.length];
+    const prod = createdProducts[enqData.productIndex % createdProducts.length];
     const createdAt = new Date(Date.now() - enqData.daysAgo * 24 * 60 * 60 * 1000);
 
     let enquiry = await Enquiry.findOne({ enquiryNumber: enqData.enquiryNumber });
@@ -400,6 +433,188 @@ export async function seedDatabase(options: { silent?: boolean } = {}) {
     }
   }
   log('Seeded realistic communication history timeline records');
+
+  // 9. Seed Quotations
+  const sampleQuotations = [
+    {
+      quotationNumber: 'QT-2026-0001',
+      revision: 0,
+      enquiryRef: createdEnquiries[1]?._id,
+      customerRef: createdCustomers[0]._id,
+      customerName: createdCustomers[0].name,
+      company: createdCustomers[0].company,
+      email: createdCustomers[0].email,
+      phone: createdCustomers[0].phone,
+      country: createdCustomers[0].country,
+      currency: 'INR',
+      lineItems: [
+        {
+          productRef: createdProducts[0]._id,
+          productName: createdProducts[0].name,
+          sku: createdProducts[0].sku,
+          description: '1.5" OD x 1.65mm WT x 6.0m Lengths ASTM A270-S2 EP Ra < 0.4 µm',
+          grade: 'SS 316L',
+          size: '1.5" OD',
+          quantity: 40,
+          unit: 'Lengths',
+          unitPrice: 4850,
+          discountPercent: 5,
+          lineTotal: 184300,
+        },
+        {
+          productRef: createdProducts[15]._id,
+          productName: createdProducts[15].name,
+          sku: createdProducts[15].sku,
+          description: 'DN40 Tri-Clamp Weir Body Diaphragm Valve PTFE/EPDM',
+          grade: 'SS 316L',
+          size: '1.5" TC',
+          quantity: 12,
+          unit: 'Pieces',
+          unitPrice: 9200,
+          discountPercent: 0,
+          lineTotal: 110400,
+        },
+      ],
+      subtotal: 294700,
+      discountTotal: 9700,
+      taxPercent: 18,
+      taxTotal: 53046,
+      grandTotal: 347746,
+      deliveryTerms: 'Ex-Works Mumbai / 5 days dispatch',
+      paymentTerms: '100% advance against Proforma Invoice',
+      validityDate: new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000),
+      status: 'sent',
+      notes: 'Includes EN 10204 3.1 Mill Test Certificates and boroscope roughness inspection reports.',
+      createdBy: adminUser._id,
+      createdByName: adminUser.name,
+    },
+    {
+      quotationNumber: 'QT-2026-0002',
+      revision: 0,
+      customerRef: createdCustomers[1]._id,
+      customerName: createdCustomers[1].name,
+      company: createdCustomers[1].company,
+      email: createdCustomers[1].email,
+      phone: createdCustomers[1].phone,
+      country: createdCustomers[1].country,
+      currency: 'EUR',
+      lineItems: [
+        {
+          productRef: createdProducts[10]._id,
+          productName: createdProducts[10].name,
+          sku: createdProducts[10].sku,
+          description: 'BS 4825 Part 3 Machined Long Weld Ferrule SS 316L',
+          grade: 'SS 316L',
+          size: '2.0" TC',
+          quantity: 200,
+          unit: 'Pieces',
+          unitPrice: 8.5,
+          discountPercent: 0,
+          lineTotal: 1700,
+        },
+        {
+          productRef: createdProducts[11]._id,
+          productName: createdProducts[11].name,
+          sku: createdProducts[11].sku,
+          description: '13MHH Heavy-Duty Double Bolt SS 304 Sanitary Clamp',
+          grade: 'SS 304',
+          size: '2.0" TC',
+          quantity: 200,
+          unit: 'Pieces',
+          unitPrice: 6.2,
+          discountPercent: 0,
+          lineTotal: 1240,
+        },
+      ],
+      subtotal: 2940,
+      discountTotal: 0,
+      taxPercent: 0,
+      taxTotal: 0,
+      grandTotal: 2940,
+      deliveryTerms: 'CIF Hamburg Port, Germany',
+      paymentTerms: 'Letter of Credit (LC) at sight',
+      validityDate: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
+      status: 'draft',
+      notes: 'Export packing in seaworthy wooden crates with plastic end-caps.',
+      createdBy: staffUser._id,
+      createdByName: staffUser.name,
+    },
+  ];
+
+  for (const qData of sampleQuotations) {
+    const existing = await Quotation.findOne({ quotationNumber: qData.quotationNumber });
+    if (!existing) {
+      await Quotation.create(qData);
+    }
+  }
+  log('Seeded sample commercial quotations with line items and calculated taxes');
+
+  // 10. Seed Tasks
+  const sampleTasks = [
+    {
+      taskTitle: 'Verify WFI loop surface roughness certificates for Gujarat Bio-Pharma',
+      description: 'Check Ra value reports for Heat Lot #B-4412 before dispatch.',
+      assignedUser: staffUser._id,
+      assignedUserName: staffUser.name,
+      enquiryRef: createdEnquiries[1]?._id,
+      customerRef: createdCustomers[0]._id,
+      dueDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+      priority: 'high',
+      status: 'pending',
+    },
+    {
+      taskTitle: 'Prepare CIF shipping freight quote to Jebel Ali port',
+      description: 'Coordinate with freight forwarder for 20ft container quotation.',
+      assignedUser: adminUser._id,
+      assignedUserName: adminUser.name,
+      customerRef: createdCustomers[3]?._id,
+      dueDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000),
+      priority: 'urgent',
+      status: 'in_progress',
+    },
+    {
+      taskTitle: 'Stock count of 2.0" and 1.5" Silicone Tri-Clamp Gaskets in warehouse',
+      description: 'Quarterly physical inventory count against ERP records.',
+      assignedUser: inventoryUser._id,
+      assignedUserName: inventoryUser.name,
+      dueDate: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000),
+      priority: 'medium',
+      status: 'pending',
+    },
+  ];
+
+  for (const tData of sampleTasks) {
+    const existing = await Task.findOne({ taskTitle: tData.taskTitle });
+    if (!existing) {
+      await Task.create(tData);
+    }
+  }
+  log('Seeded operational tasks for staff and inventory');
+
+  // 11. Seed Audit Logs
+  const sampleAuditLogs = [
+    {
+      timestamp: new Date(now.getTime() - 48 * 60 * 60 * 1000),
+      userName: 'Chandan (Super Admin)',
+      userRole: 'super_admin',
+      action: 'SYSTEM_INITIALIZATION',
+      entityType: 'settings',
+      details: { message: 'Database initialized and seeded with 20 priority products.' },
+    },
+    {
+      timestamp: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+      userName: 'Pooja Sharma (Sales Engineer)',
+      userRole: 'sales',
+      action: 'CREATE_QUOTATION',
+      entityType: 'quotation',
+      details: { quotationNumber: 'QT-2026-0001', grandTotal: 347746, currency: 'INR' },
+    },
+  ];
+
+  for (const aLog of sampleAuditLogs) {
+    await AuditLog.create(aLog);
+  }
+  log('Seeded initial immutable compliance audit log entries');
 
   log('✅ Seed completed successfully! Super Admin credentials:');
   log(`   Email:    ${config.adminEmail}`);

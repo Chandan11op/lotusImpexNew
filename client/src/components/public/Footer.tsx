@@ -53,77 +53,82 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/products?category=Sanitary+Tubes+%26+Pipes" className="hover:text-white transition-colors">
-                  Sanitary Tubes & Pipes (ASTM A270)
+                <Link to="/products/sanitary-pipes" className="hover:text-white transition-colors">
+                  Sanitary Pipes & Tubes (ASTM A270)
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=TC+Clamps+%26+Ferrules" className="hover:text-white transition-colors">
-                  Tri-Clamp Clamps & Ferrules
+                <Link to="/products/electro-polished-pipes" className="hover:text-white transition-colors">
+                  Electro-Polished Tubing (Ra &lt; 0.4µm)
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=Valves+%26+Butterfly+Valves" className="hover:text-white transition-colors">
-                  Butterfly & Dairy Valves
+                <Link to="/products/tri-clamp-fittings" className="hover:text-white transition-colors">
+                  Tri-Clamp Ferrules & Clamps
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=Bends+%26+Elbows" className="hover:text-white transition-colors">
-                  Sanitary 90° & 45° Bends
+                <Link to="/products/sanitary-valves" className="hover:text-white transition-colors">
+                  Butterfly & Diaphragm Valves
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=Tees+%26+Crosses" className="hover:text-white transition-colors">
-                  Equal & Reducing Tees
+                <Link to="/products/sanitary-pipe-fittings" className="hover:text-white transition-colors">
+                  Sanitary 90° Bends & Equal Tees
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=Unions+%26+DIN+Unions" className="hover:text-white transition-colors">
-                  DIN 11851 & SMS Dairy Unions
+                <Link to="/products/gaskets" className="hover:text-white transition-colors">
+                  USP Class VI Sanitary Gaskets
                 </Link>
               </li>
               <li>
-                <Link to="/products?category=Electropolished+Fittings" className="hover:text-white transition-colors">
-                  Electropolished Fittings (Ra &lt; 0.4µm)
+                <Link to="/products/tank-cleaning-accessories" className="hover:text-white transition-colors">
+                  CIP Spray Balls & Tank Devices
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Applications */}
+          {/* Applications & Operations */}
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-4">
-              Target Industries
+              Industries & Process
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/industries" className="hover:text-white transition-colors">
+                <Link to="/industries/pharmaceutical" className="hover:text-white transition-colors">
+                  Pharmaceuticals & Bioprocess
+                </Link>
+              </li>
+              <li>
+                <Link to="/industries/dairy" className="hover:text-white transition-colors">
                   Dairy & Milk Processing Lines
                 </Link>
               </li>
               <li>
-                <Link to="/industries" className="hover:text-white transition-colors">
-                  Biopharmaceutical & WFI Loops
-                </Link>
-              </li>
-              <li>
-                <Link to="/industries" className="hover:text-white transition-colors">
-                  Food, Beverage & Bottling Plants
-                </Link>
-              </li>
-              <li>
-                <Link to="/industries" className="hover:text-white transition-colors">
-                  Brewery & Fermentation Systems
-                </Link>
-              </li>
-              <li>
-                <Link to="/industries" className="hover:text-white transition-colors">
-                  Industrial Chemical & Fluid Piping
+                <Link to="/industries/food-beverage" className="hover:text-white transition-colors">
+                  Food, Beverage & Breweries
                 </Link>
               </li>
               <li>
                 <Link to="/quality" className="hover:text-white transition-colors">
-                  Quality & Material Verification
+                  Quality & EN 10204 3.1 MTC
+                </Link>
+              </li>
+              <li>
+                <Link to="/supply-process" className="hover:text-white transition-colors">
+                  Supply & Enquiry Workflow
+                </Link>
+              </li>
+              <li>
+                <Link to="/media" className="hover:text-white transition-colors">
+                  Media & Technical Inspection
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="hover:text-white transition-colors">
+                  Frequently Asked Questions
                 </Link>
               </li>
             </ul>
@@ -132,7 +137,7 @@ export const Footer: React.FC = () => {
           {/* Internal Access & Brand Notice */}
           <div className="space-y-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Internal Systems
+              Enquiries & Portals
             </h4>
             <div className="p-3 bg-steel-900 border border-steel-800 rounded-lg space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400">
@@ -140,19 +145,30 @@ export const Footer: React.FC = () => {
                 <span>Protected CRM Portal</span>
               </div>
               <p className="text-[11px] text-steel-400">
-                Real-time lead tracking, enquiry assignment, follow-up management, and product catalogue administration.
+                Real-time lead tracking, commercial quotations, task management, and product catalogue administration.
               </p>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:text-cyan-400 transition-colors pt-1"
-              >
-                <span>Access CRM Dashboard</span>
-                <ArrowRight className="h-3 w-3" />
-              </Link>
+              <div className="pt-1 flex flex-col gap-1.5">
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:text-cyan-400 transition-colors"
+                >
+                  <span>Access CRM Dashboard</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+                <div className="flex items-center gap-2 pt-1 text-[11px]">
+                  <Link to="/request-quote" className="text-cyan-400 hover:underline">
+                    Request Quote
+                  </Link>
+                  <span className="text-steel-600">•</span>
+                  <Link to="/submit-boq" className="text-cyan-400 hover:underline">
+                    Submit BOQ
+                  </Link>
+                </div>
+              </div>
             </div>
             <div className="text-[11px] text-steel-500">
               <span className="block font-semibold text-steel-400">Product Branding Note:</span>
-              Draft product line branding "Aeron" is configurable in company administration.
+              Lotus Impex is the provisional corporate identity. Dedicated product brand (e.g. Aeron) is centrally configurable.
             </div>
           </div>
         </div>
@@ -160,13 +176,17 @@ export const Footer: React.FC = () => {
         {/* Bottom Line */}
         <div className="mt-12 pt-8 border-t border-steel-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-steel-500">
           <p>© {new Date().getFullYear()} Lotus Impex. All rights reserved. Mumbai, India.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link to="/privacy" className="hover:text-steel-300 transition-colors">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link to="/terms" className="hover:text-steel-300 transition-colors">
+              Terms & Conditions
+            </Link>
+            <span>•</span>
             <LanguageSelector variant="full" />
             <ThemeToggle />
-            <span>•</span>
-            <Link to="/contact" className="hover:text-steel-300">
-              Contact Mumbai Sales Desk
-            </Link>
           </div>
         </div>
       </div>

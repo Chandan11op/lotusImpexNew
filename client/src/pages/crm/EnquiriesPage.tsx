@@ -574,7 +574,7 @@ export const EnquiriesPage: React.FC = () => {
               { label: 'Select Staff Member...', value: '' },
               ...staffUsers.map((u) => ({
                 label: `${u.name} (${u.role === 'super_admin' ? 'Admin' : 'Staff'})`,
-                value: u.id,
+                value: u.id || u._id || '',
               })),
             ]}
           />

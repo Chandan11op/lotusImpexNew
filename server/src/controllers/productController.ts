@@ -31,9 +31,11 @@ export async function getPublicProducts(
     if (search && typeof search === 'string' && search.trim() !== '') {
       query.$or = [
         { name: { $regex: search.trim(), $options: 'i' } },
+        { sku: { $regex: search.trim(), $options: 'i' } },
         { shortDescription: { $regex: search.trim(), $options: 'i' } },
         { category: { $regex: search.trim(), $options: 'i' } },
         { connectionType: { $regex: search.trim(), $options: 'i' } },
+        { finish: { $regex: search.trim(), $options: 'i' } },
       ];
     }
 
@@ -42,7 +44,7 @@ export async function getPublicProducts(
     const skip = (pageNum - 1) * limitNum;
 
     const [products, total] = await Promise.all([
-      Product.find(query).sort({ isFeatured: -1, createdAt: -1 }).skip(skip).limit(limitNum),
+      Product.find(query).sort({ priority: 1, isFeatured: -1, createdAt: -1 }).skip(skip).limit(limitNum),
       Product.countDocuments(query),
     ]);
 
@@ -125,6 +127,25 @@ export async function getCategories(
   }
 }
 
+export async function getPriorityProducts(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const products = await Product.find({ isPublished: true })
+      .sort({ priority: 1, isFeatured: -1, createdAt: -1 })
+      .limit(20);
+
+    res.json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // Admin product endpoints
 export async function getAdminProducts(
   req: Request,
@@ -190,8 +211,11 @@ export async function createProduct(
       return;
     }
 
+    const sku = validatedData.sku || (`LI-${validatedData.slug.slice(0, 10).toUpperCase().replace(/[^A-Z0-9]/g, '-')}-${Math.floor(100 + Math.random() * 900)}`);
+
     const product = await Product.create({
       ...validatedData,
+      sku,
       isDemoItem: false,
     });
 

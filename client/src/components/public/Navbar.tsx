@@ -22,6 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestQuote }) => {
     { label: t('navProducts'), path: '/products' },
     { label: t('navIndustries'), path: '/industries' },
     { label: t('navQuality'), path: '/quality' },
+    { label: 'Process', path: '/supply-process' },
+    { label: 'Media', path: '/media' },
     { label: t('navAbout'), path: '/about' },
     { label: t('navContact'), path: '/contact' },
   ];
@@ -108,7 +110,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestQuote }) => {
           </nav>
 
           {/* Action CTAs */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
+            <Link to="/submit-boq">
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden xl:inline-flex text-xs font-semibold"
+              >
+                Submit BOQ
+              </Button>
+            </Link>
             <Button
               variant="primary"
               size="sm"
